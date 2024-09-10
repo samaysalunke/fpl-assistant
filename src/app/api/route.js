@@ -1,27 +1,37 @@
 import { NextResponse } from 'next/server';
-// import { fetchGeneralInfo, fetchH2HLeague } from '@/utils/api';
-import * as api from '@/utils/api';
-
+import { fetchGeneralInfo } from '../../../utils/api';
+import twilio from 'twilio';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     console.log('Starting test reminder process...');
-    
-    console.log('Fetching general info...');
-    const generalInfo = await api.fetchGeneralInfo();
-    console.log('General info fetched successfully');
 
-    // Commenting out H2H league fetch for now
-    // const leagueId = process.env.H2H_LEAGUE_ID;
-    // const h2hLeagueData = await fetchH2HLeague(leagueId);
+    const generalInfo = await fetchGeneralInfo();
+    const nextEvent = generalInfo.events.find(event => !event.finished);
+    const deadlineTime = nextEvent ? new Date(nextEvent.deadline_time) : null;
 
-    return NextResponse.json({ 
-      message: 'Test reminder process completed',
-      generalInfo: generalInfo,
-      // h2hLeagueData: h2hLeagueData
-    });
+    if (deadlineTime) {
+      const message = `FPL Reminder: Gameweek ${nextEvent.id} deadline is on ${deadlineTime.toLocaleString()}`;
+      
+      // Send WhatsApp message
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      await client.messages.create({
+        body: message,
+        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+        to: `whatsapp:${process.env.WHATSAPP_GROUP_ID}`
+      });
+
+      return NextResponse.json({ 
+        message: 'Reminder sent successfully',
+        sentMessage: message
+      });
+    } else {
+      return NextResponse.json({ 
+        message: 'No upcoming deadline found'
+      });
+    }
   } catch (error) {
     console.error('Error in test-reminder:', error);
     return NextResponse.json({ 
@@ -31,4 +41,3 @@ export async function GET() {
     }, { status: 500 });
   }
 }
-console.log('API utils:', api);

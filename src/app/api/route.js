@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkAndSendReminders } from '../send-reminders/route';
-import { fetchGeneralInfo } from '../../../utils/api';
+import { fetchGeneralInfo, fetchTeamDetails, fetchH2HLeague } from '@/utils/api';
 
 export async function GET() {
   return handleRequest();
@@ -16,11 +15,25 @@ async function handleRequest() {
     const generalInfo = await fetchGeneralInfo();
     console.log('General info fetched successfully');
 
-    console.log('Attempting to send test reminder...');
-    await checkAndSendReminders(true, generalInfo);
-    console.log('Test reminder sent successfully');
+    // For testing purposes, let's fetch some additional data
+    const teamId = '1234'; // Replace with a valid team ID
+    const leagueId = '5678'; // Replace with a valid league ID
 
-    return NextResponse.json({ message: 'Test reminder sent successfully' });
+    const [teamDetails, h2hLeague] = await Promise.all([
+      fetchTeamDetails(teamId),
+      fetchH2HLeague(leagueId)
+    ]);
+
+    console.log('Attempting to send test reminder...');
+    // Here you would normally send the actual reminder
+    // For now, we'll just log the data we've fetched
+
+    return NextResponse.json({ 
+      message: 'Test reminder sent successfully',
+      generalInfo: generalInfo,
+      teamDetails: teamDetails,
+      h2hLeague: h2hLeague
+    });
   } catch (error) {
     console.error('Error in test-reminder:', error);
     return NextResponse.json({ 

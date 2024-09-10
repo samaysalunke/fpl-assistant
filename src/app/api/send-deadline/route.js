@@ -30,7 +30,7 @@ export async function GET() {
     await client.messages.create({
       body: message,
       from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-      to: `whatsapp:${process.env.WHATSAPP_GROUP_ID}`
+      to: `whatsapp:${process.env.YOUR_WHATSAPP_NUMBER}`  // This should be your personal WhatsApp number
     });
     console.log('WhatsApp message sent successfully');
 

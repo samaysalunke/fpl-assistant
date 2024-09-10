@@ -30,7 +30,7 @@ export async function fetchGeneralInfo() {
       throw new Error(`Failed to fetch general information: ${error.message}`);
     }
   }
-
+  
   export const fetchH2HLeague = async (leagueId) => {
     try {
       console.log(`Fetching H2H league data for league ID: ${leagueId}`);

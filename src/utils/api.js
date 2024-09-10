@@ -46,15 +46,26 @@ export const fetchTeamDetails = async (teamId) => {
     
   };
   export const fetchGeneralInfo = async () => {
+    const cachedData = getCache('generalInfo');
+    if (cachedData) return cachedData;
+  
     try {
-      const response = await fetch('/api/fpl-proxy?url=bootstrap-static/');
+      console.log('Fetching general info from FPL API...');
+      const response = await fetch('/api/fpl-proxy?url=bootstrap-static');
+      console.log('Response received from FPL API');
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+  
+      const data = await response.json();
+      console.log('Data parsed successfully');
+  
+      setCache('generalInfo', data, 3600000); // Cache for 1 hour
+      return data;
     } catch (error) {
       console.error("Failed to fetch general info:", error);
-      throw new Error("Failed to fetch general information. Please try again later.");
+      throw new Error(`Failed to fetch general information: ${error.message}`);
     }
   };
   export const fetchH2HLeague = async (leagueId) => {

@@ -16,15 +16,15 @@ const PlayerComparison = ({ players }) => {
     <div className="bg-white p-6 rounded-lg shadow">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Player Comparison</h2>
       <div className="flex space-x-4 mb-4">
-        <select
-          value={player1}
-          onChange={(e) => setPlayer1(e.target.value)}
-          className="p-2 border rounded flex-1"
+      <select
+        value={player1}
+        onChange={(e) => setPlayer1(e.target.value)}
+        className="p-2 border rounded flex-1"
         >
-          <option value="">Select Player 1</option>
-          {players.map(p => (
-            <option key={p.name} value={p.name}>{p.name}</option>
-          ))}
+    <option value="">Select Player 1</option>
+    {players.map(p => (
+    <option key={p.id} value={p.id}>{p.web_name}</option>
+    ))}
         </select>
         <select
           value={player2}
@@ -33,8 +33,8 @@ const PlayerComparison = ({ players }) => {
         >
           <option value="">Select Player 2</option>
           {players.map(p => (
-            <option key={p.name} value={p.name}>{p.name}</option>
-          ))}
+    <option key={p.id} value={p.id}>{p.web_name}</option>
+    ))}
         </select>
       </div>
       {player1Stats && player2Stats && (

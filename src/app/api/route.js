@@ -11,15 +11,14 @@ export async function GET() {
     const generalInfo = await fetchGeneralInfo();
     console.log('General info fetched successfully');
 
-    console.log('Fetching H2H league data...');
-    const leagueId = process.env.H2H_LEAGUE_ID; // Make sure this is set in your Vercel environment variables
-    const h2hLeagueData = await fetchH2HLeague(leagueId);
-    console.log('H2H league data fetched successfully');
+    // Commenting out H2H league fetch for now
+    // const leagueId = process.env.H2H_LEAGUE_ID;
+    // const h2hLeagueData = await fetchH2HLeague(leagueId);
 
     return NextResponse.json({ 
       message: 'Test reminder process completed',
       generalInfo: generalInfo,
-      h2hLeagueData: h2hLeagueData
+      // h2hLeagueData: h2hLeagueData
     });
   } catch (error) {
     console.error('Error in test-reminder:', error);

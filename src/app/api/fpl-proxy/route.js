@@ -19,6 +19,6 @@ export async function GET(request) {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error in FPL proxy:', error);
-    return NextResponse.json({ error: 'Failed to fetch data from FPL API' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch data from FPL API', details: error.message }, { status: 500 });
   }
 }

@@ -19,23 +19,33 @@ function getCache(key) {
 }
 
 export const fetchGeneralInfo = async () => {
-    const cachedData = getCache('generalInfo');
-    if (cachedData) return cachedData;
-  
     try {
       console.log('Fetching general info from FPL API...');
-      // Use the full URL here
-      const response = await fetch('/api/fpl-proxy?url=bootstrap-static/');
-      console.log('Response received from FPL API');
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      let data;
+      if (typeof window === 'undefined') {
+        // We're on the server side
+        const https = require('https');
+        const response = await new Promise((resolve, reject) => {
+          https.get('https://fantasy.premierleague.com/api/bootstrap-static/', (res) => {
+            let data = '';
+            res.on('data', (chunk) => {
+              data += chunk;
+            });
+            res.on('end', () => {
+              resolve(JSON.parse(data));
+            });
+          }).on('error', reject);
+        });
+        data = response;
+      } else {
+        // We're on the client side
+        const response = await fetch('/api/fpl-proxy?url=bootstrap-static/');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        data = await response.json();
       }
-  
-      const data = await response.json();
-      console.log('Data parsed successfully');
-  
-      setCache('generalInfo', data, 3600000); // Cache for 1 hour
+      console.log('Data fetched successfully');
       return data;
     } catch (error) {
       console.error("Failed to fetch general info:", error);

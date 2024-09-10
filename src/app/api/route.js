@@ -1,22 +1,15 @@
 import { NextResponse } from 'next/server';
 import { fetchGeneralInfo } from '@/utils/api';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
-  return handleRequest();
-}
-
-export async function POST() {
-  return handleRequest();
-}
-
-async function handleRequest() {
   try {
     console.log('Starting test reminder process...');
     console.log('Fetching general info...');
     const generalInfo = await fetchGeneralInfo();
-    console.log('General info fetched successfully:', JSON.stringify(generalInfo, null, 2));
+    console.log('General info fetched successfully');
 
-    // For now, we'll just return the general info
     return NextResponse.json({ 
       message: 'Test reminder process completed',
       generalInfo: generalInfo

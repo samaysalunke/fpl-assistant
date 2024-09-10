@@ -31,3 +31,4 @@ export async function GET() {
     }, { status: 500 });
   }
 }
+console.log('API utils:', api);

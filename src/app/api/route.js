@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { fetchGeneralInfo, fetchH2HLeague } from '@/utils/api';
+// import { fetchGeneralInfo, fetchH2HLeague } from '@/utils/api';
+import * as api from '@/utils/api';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -8,7 +10,7 @@ export async function GET() {
     console.log('Starting test reminder process...');
     
     console.log('Fetching general info...');
-    const generalInfo = await fetchGeneralInfo();
+    const generalInfo = await api.fetchGeneralInfo();
     console.log('General info fetched successfully');
 
     // Commenting out H2H league fetch for now

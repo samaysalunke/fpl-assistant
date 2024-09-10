@@ -2,46 +2,35 @@ import React from 'react';
 
 const TeamDisplay = ({ teamData }) => {
   if (!teamData || !teamData.picks) {
-    return <p>No team data available.</p>;
+    return null;
   }
 
   return (
-    <div className="mt-4">
-      <h3 className="text-xl font-semibold mb-2">{teamData.name}</h3>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-sm text-gray-600">Overall Rank</p>
-          <p className="text-lg font-bold">{teamData.stats.overallRank.toLocaleString()}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">Total Points</p>
-          <p className="text-lg font-bold">{teamData.stats.totalPoints}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">Gameweek Points</p>
-          <p className="text-lg font-bold">{teamData.stats.gameweekPoints}</p>
-        </div>
-      </div>
-      <table className="min-w-full bg-white border border-gray-300 text-gray-800">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 border-b">Player</th>
-            <th className="px-4 py-2 border-b">Position</th>
-            <th className="px-4 py-2 border-b">Points</th>
-          </tr>
-        </thead>
-        <tbody>
-          {teamData.picks.map((player, index) => (
-            <tr key={index} className={player.is_captain ? 'bg-yellow-100' : player.is_vice_captain ? 'bg-gray-100' : ''}>
-              <td className="px-4 py-2 border-b">
-                {player.name} {player.is_captain ? '(C)' : player.is_vice_captain ? '(VC)' : ''}
-              </td>
-              <td className="px-4 py-2 border-b">{player.position}</td>
-              <td className="px-4 py-2 border-b">{player.points}</td>
+    <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">{teamData.name}</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 text-left">Player</th>
+              <th className="px-4 py-2 text-left">Position</th>
+              <th className="px-4 py-2 text-left">Points</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {teamData.picks.map((player, index) => (
+              <tr key={index} className={`${player.is_captain ? 'bg-yellow-100' : ''} ${player.is_vice_captain ? 'bg-gray-100' : ''}`}>
+                <td className="px-4 py-2">
+                  {player.playerName} 
+                  {player.is_captain ? ' (C)' : player.is_vice_captain ? ' (VC)' : ''}
+                </td>
+                <td className="px-4 py-2">{player.position}</td>
+                <td className="px-4 py-2">{player.points}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

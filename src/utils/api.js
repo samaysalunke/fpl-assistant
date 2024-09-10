@@ -1,4 +1,51 @@
-export const fetchGeneralInfo = async () => {
+export const fetchTeamDetails = async (teamId) => {
+    try {
+      const generalInfo = await fetchGeneralInfo();
+      const currentEvent = generalInfo.events.find(event => event.is_current)?.id || 1;
+  
+      const [teamResponse, picksResponse, liveResponse] = await Promise.all([
+        fetch(`/api/fpl-proxy?url=entry/${teamId}/`),
+        fetch(`/api/fpl-proxy?url=entry/${teamId}/event/${currentEvent}/picks/`),
+        fetch(`/api/fpl-proxy?url=event/${currentEvent}/live/`)
+      ]);
+  
+      if (!teamResponse.ok || !picksResponse.ok || !liveResponse.ok) {
+        throw new Error(`HTTP error! status: ${teamResponse.status}`);
+      }
+  
+      const teamData = await teamResponse.json();
+      const picksData = await picksResponse.json();
+      const liveData = await liveResponse.json();
+  
+      const playerMap = generalInfo.elements.reduce((acc, player) => {
+        acc[player.id] = player;
+        return acc;
+      }, {});
+  
+      const transformedData = {
+        id: teamData.id,
+        name: teamData.name,
+        stats: {
+          overallRank: teamData.summary_overall_rank,
+          gameweekPoints: teamData.summary_event_points,
+          totalPoints: teamData.summary_overall_points,
+        },
+        picks: picksData.picks.map(pick => ({
+          ...pick,
+          playerName: playerMap[pick.element].web_name,
+          position: ['GK', 'DEF', 'MID', 'FWD'][playerMap[pick.element].element_type - 1],
+          points: liveData.elements[pick.element].stats.total_points * pick.multiplier
+        })),
+      };
+  
+      return transformedData;
+    } catch (error) {
+      console.error("Failed to fetch team details:", error);
+      throw new Error("Failed to fetch team details. Please try again later.");
+    }
+    
+  };
+  export const fetchGeneralInfo = async () => {
     try {
       const response = await fetch('/api/fpl-proxy?url=bootstrap-static/');
       if (!response.ok) {
@@ -10,64 +57,15 @@ export const fetchGeneralInfo = async () => {
       throw new Error("Failed to fetch general information. Please try again later.");
     }
   };
-  
-  export const fetchTeamDetails = async (teamId) => {
+  export const fetchH2HLeague = async (leagueId) => {
     try {
-      // Fetch basic team info
-      const teamResponse = await fetch(`/api/fpl-proxy?url=entry/${teamId}/`);
-      if (!teamResponse.ok) {
-        throw new Error(`HTTP error! status: ${teamResponse.status}`);
-      }
-      const teamData = await teamResponse.json();
-      console.log('Raw team data:', teamData);
-  
-      // Fetch current event (gameweek) if not provided in team data
-      const currentEvent = teamData.current_event || await getCurrentEvent();
-  
-      // Fetch picks for the current event
-      const picksResponse = await fetch(`/api/fpl-proxy?url=entry/${teamId}/event/${currentEvent}/picks/`);
-      if (!picksResponse.ok) {
-        throw new Error(`HTTP error! status: ${picksResponse.status}`);
-      }
-      const picksData = await picksResponse.json();
-      console.log('Raw picks data:', picksData);
-  
-      // Transform the data
-      const transformedData = {
-        id: teamData.id,
-        name: teamData.name,
-        stats: {
-          overallRank: teamData.summary_overall_rank,
-          gameweekPoints: teamData.summary_event_points,
-          totalPoints: teamData.summary_overall_points,
-        },
-        picks: picksData.picks.map(pick => ({
-          element: pick.element,
-          position: pick.position,
-          multiplier: pick.multiplier,
-          is_captain: pick.is_captain,
-          is_vice_captain: pick.is_vice_captain,
-        })),
-      };
-  
-      return transformedData;
-    } catch (error) {
-      console.error("Failed to fetch team details:", error);
-      throw new Error("Failed to fetch team details. Please try again later.");
-    }
-  };
-  
-  async function getCurrentEvent() {
-    try {
-      const response = await fetch('/api/fpl-proxy?url=bootstrap-static/');
+      const response = await fetch(`/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
-      const currentEvent = data.events.find(event => event.is_current);
-      return currentEvent ? currentEvent.id : 1; // Default to 1 if no current event found
+      return await response.json();
     } catch (error) {
-      console.error("Failed to fetch current event:", error);
-      return 1; // Default to 1 in case of error
+      console.error("Failed to fetch H2H league data:", error);
+      throw new Error("Failed to fetch H2H league data. Please try again later.");
     }
-  }
+  };

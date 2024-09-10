@@ -1,60 +1,66 @@
-'use client'
 import React, { useState } from 'react';
 
 const PlayerComparison = ({ players }) => {
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');
 
-  const getPlayerStats = (playerName) => {
-    return players.find(p => p.name === playerName) || null;
+  const compareStats = (stat) => {
+    if (!player1 || !player2) return null;
+    const p1 = players.find(p => p.id === parseInt(player1));
+    const p2 = players.find(p => p.id === parseInt(player2));
+    if (p1[stat] > p2[stat]) return 'text-green-600 font-bold';
+    if (p1[stat] < p2[stat]) return 'text-red-600 font-bold';
+    return '';
   };
 
-  const player1Stats = getPlayerStats(player1);
-  const player2Stats = getPlayerStats(player2);
-
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Player Comparison</h2>
       <div className="flex space-x-4 mb-4">
-      <select
-        value={player1}
-        onChange={(e) => setPlayer1(e.target.value)}
-        className="p-2 border rounded flex-1"
+        <select 
+          value={player1} 
+          onChange={(e) => setPlayer1(e.target.value)}
+          className="flex-1 p-2 border rounded"
         >
-    <option value="">Select Player 1</option>
-    {players.map(p => (
-    <option key={p.id} value={p.id}>{p.web_name}</option>
-    ))}
+          <option value="">Select Player 1</option>
+          {players.map(p => (
+            <option key={p.id} value={p.id}>{p.web_name}</option>
+          ))}
         </select>
-        <select
-          value={player2}
+        <select 
+          value={player2} 
           onChange={(e) => setPlayer2(e.target.value)}
-          className="p-2 border rounded flex-1"
+          className="flex-1 p-2 border rounded"
         >
           <option value="">Select Player 2</option>
           {players.map(p => (
-    <option key={p.id} value={p.id}>{p.web_name}</option>
-    ))}
+            <option key={p.id} value={p.id}>{p.web_name}</option>
+          ))}
         </select>
       </div>
-      {player1Stats && player2Stats && (
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="font-semibold">{player1Stats.name}</p>
-            <p>{player1Stats.position}</p>
-            <p>£{player1Stats.price}m</p>
-            <p>xG: {player1Stats.xG.toFixed(2)}</p>
-          </div>
-          <div className="font-semibold">
-            <p>VS</p>
-          </div>
-          <div>
-            <p className="font-semibold">{player2Stats.name}</p>
-            <p>{player2Stats.position}</p>
-            <p>£{player2Stats.price}m</p>
-            <p>xG: {player2Stats.xG.toFixed(2)}</p>
-          </div>
-        </div>
+      {player1 && player2 && (
+        <table className="min-w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-2">Stat</th>
+              <th className="px-4 py-2">{players.find(p => p.id === parseInt(player1)).web_name}</th>
+              <th className="px-4 py-2">{players.find(p => p.id === parseInt(player2)).web_name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {['points_per_game', 'total_points', 'now_cost', 'selected_by_percent'].map(stat => (
+              <tr key={stat}>
+                <td className="px-4 py-2">{stat.replace('_', ' ')}</td>
+                <td className={`px-4 py-2 ${compareStats(stat)}`}>
+                  {players.find(p => p.id === parseInt(player1))[stat]}
+                </td>
+                <td className={`px-4 py-2 ${compareStats(stat)}`}>
+                  {players.find(p => p.id === parseInt(player2))[stat]}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

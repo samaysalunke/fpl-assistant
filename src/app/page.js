@@ -38,7 +38,18 @@
 
       fetchInitialData();
     }, []);
-
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const data = await fetchGeneralInfo();
+          setGeneralInfo(data);
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+  
+      fetchData();
+    }, []);
     const handleFetchTeam = async () => {
       setIsLoading(true);
       setError(null);

@@ -18,18 +18,18 @@ function getCache(key) {
   return cached.data;
 }
 
-export async function fetchGeneralInfo() {
-    try {
-      const response = await fetch('https://fantasy.premierleague.com/api/bootstrap-static/');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Failed to fetch general info:", error);
-      throw new Error(`Failed to fetch general information: ${error.message}`);
+export const fetchGeneralInfo = async () => {
+  try {
+    const response = await fetch('/api/fpl-data');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to fetch general info:", error);
+    throw new Error(`Failed to fetch general information: ${error.message}`);
   }
+};
   
   export const fetchH2HLeague = async (leagueId) => {
     try {

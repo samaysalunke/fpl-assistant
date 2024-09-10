@@ -4,7 +4,7 @@ import twilio from 'twilio';
 export const dynamic = 'force-dynamic';
 
 async function fetchGeneralInfo() {
-  const response = await fetch('https://fantasy.premierleague.com/api/bootstrap-static/');
+  const response = await fetch('https://fpl-assistant.vercel.app/api/fpl-data');
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
@@ -27,22 +27,25 @@ export async function GET() {
 
     console.log('Sending WhatsApp message...');
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-    await client.messages.create({
+    const result = await client.messages.create({
       body: message,
       from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-      to: `whatsapp:${process.env.YOUR_WHATSAPP_NUMBER}`  // This should be your personal WhatsApp number
+      to: `whatsapp:${process.env.YOUR_WHATSAPP_NUMBER}`
     });
-    console.log('WhatsApp message sent successfully');
+    console.log('WhatsApp message sent successfully', result.sid);
 
     return NextResponse.json({ 
       message: 'Deadline reminder sent successfully',
-      sentMessage: message
+      sentMessage: message,
+      messageSid: result.sid
     });
   } catch (error) {
     console.error('Error sending deadline reminder:', error);
     return NextResponse.json({ 
       message: 'Error sending deadline reminder', 
       error: error.message,
+      code: error.code,
+      moreInfo: error.moreInfo,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }, { status: 500 });
   }

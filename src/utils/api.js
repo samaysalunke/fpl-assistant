@@ -101,14 +101,17 @@ export const fetchTeamDetails = async (teamId) => {
 };
 
 export const fetchH2HLeague = async (leagueId) => {
-  try {
-    const response = await fetch(`/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+      console.log(`Fetching H2H league data for league ID: ${leagueId}`);
+      const response = await fetch(`/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('H2H league data fetched successfully');
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch H2H league data:", error);
+      throw new Error(`Failed to fetch H2H league data: ${error.message}`);
     }
-    return await response.json();
-  } catch (error) {
-    console.error("Failed to fetch H2H league data:", error);
-    throw new Error("Failed to fetch H2H league data. Please try again later.");
-  }
-};
+  };

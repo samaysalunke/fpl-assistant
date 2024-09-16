@@ -2,5 +2,9 @@
     "buildCommand": "next build",
     "outputDirectory": ".next",
     "devCommand": "next dev",
-    "installCommand": "npm install"
+    "installCommand": "npm install",
+    "crons": [{
+    "path": "/api/send-email-reminder",
+    "schedule": "0 */6 * * *"
+  }]
   }

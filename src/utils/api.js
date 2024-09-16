@@ -20,8 +20,15 @@ function getCache(key) {
 
 export const fetchGeneralInfo = async () => {
   try {
-    const response = await fetch('/api/fpl-data');
+    const response = await fetch('https://fantasy.premierleague.com/api/bootstrap-static/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
     if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error('Access to FPL API is forbidden. This could be due to rate limiting or IP blocking.');
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();

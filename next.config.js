@@ -25,7 +25,7 @@ const nextConfig = {
     YOUR_WHATSAPP_NUMBER: process.env.YOUR_WHATSAPP_NUMBER,
     EMAIL_USER: process.env.EMAIL_USER,
     EMAIL_PASS: process.env.EMAIL_PASS,
-    EMAIL_RECIPIENTS: process.env.EMAIL_RECIPIENTS,
+    EMAIL_RECIPIENTS: process.env.EMAIL_RECIPIENTS
   }
 };
 

@@ -30,27 +30,42 @@ export default function Home() {
       setMessage('Error sending reminder');
     }
   };
+  const fetchH2HLeagueData = async () => {
+    if (!h2hLeagueData) {
+      setIsLoading(true);
+      try {
+        console.log('Fetching H2H league data...');
+        const data = await fetchH2HLeague(process.env.NEXT_PUBLIC_H2H_LEAGUE_ID);
+        console.log('H2H league data fetched successfully:', data);
+        setH2HLeagueData(data);
+      } catch (err) {
+        console.error('Error fetching H2H league data:', err);
+        setError('Failed to fetch H2H league data: ' + err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleComponentChange = (component) => {
+    setActiveComponent(component);
+    if (component === 'h2h') {
+      fetchH2HLeagueData();
+    }
+  };
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
-        console.log('Fetching general info and H2H league data...');
-        const [generalInfoData, h2hLeagueData] = await Promise.all([
-          fetchGeneralInfo(),
-          fetchH2HLeague(process.env.NEXT_PUBLIC_H2H_LEAGUE_ID)
-        ]);
-        console.log('Fetched general info:', generalInfoData);
-        console.log('Fetched H2H league data:', h2hLeagueData);
+        const generalInfoData = await fetchGeneralInfo();
         setGeneralInfo(generalInfoData);
-        setH2HLeagueData(h2hLeagueData);
       } catch (err) {
-        console.error('Error fetching data:', err);
         setError('Failed to fetch data');
       } finally {
         setIsLoading(false);
       }
     };
-  
+
     fetchInitialData();
   }, []);
   

@@ -1,6 +1,8 @@
 // Add this at the top of the file
 let cache = {};
-
+let h2hLeagueCache = null;
+let lastFetchTime = 0;
+const CACHE_DURATION = 60 * 60 * 1000;
 function setCache(key, data, ttl = 3600000) { // TTL default: 1 hour
   cache[key] = {
     data,
@@ -20,15 +22,8 @@ function getCache(key) {
 
 export const fetchGeneralInfo = async () => {
   try {
-    const response = await fetch('https://fantasy.premierleague.com/api/bootstrap-static/', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
-    });
+    const response = await fetch('/api/fpl-data');
     if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error('Access to FPL API is forbidden. This could be due to rate limiting or IP blocking.');
-      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
@@ -38,21 +33,31 @@ export const fetchGeneralInfo = async () => {
   }
 };
   
-  export const fetchH2HLeague = async (leagueId) => {
-    try {
-      console.log(`Fetching H2H league data for league ID: ${leagueId}`);
-      const response = await fetch(`/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('H2H league data fetched successfully');
-      return data;
-    } catch (error) {
-      console.error("Failed to fetch H2H league data:", error);
-      throw new Error(`Failed to fetch H2H league data: ${error.message}`);
+export const fetchH2HLeague = async (leagueId) => {
+  console.log(`Attempting to fetch H2H league data for league ID: ${leagueId}`);
+  const now = Date.now();
+  if (h2hLeagueCache && (now - lastFetchTime < CACHE_DURATION)) {
+    console.log('Returning cached H2H league data');
+    return h2hLeagueCache;
+  }
+
+  try {
+    console.log(`Fetching fresh H2H league data from API`);
+    const response = await fetch(`/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
+    console.log(`Received response with status: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
+    const data = await response.json();
+    console.log('Successfully parsed H2H league data');
+    h2hLeagueCache = data;
+    lastFetchTime = now;
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch H2H league data:", error);
+    throw new Error(`Failed to fetch H2H league data: ${error.message}`);
+  }
+};
   
 export const fetchTeamDetails = async (teamId) => {
   try {

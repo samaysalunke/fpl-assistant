@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Users, BarChart2, Repeat, Scale, Grid, Lightbulb } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, closeSidebar }) => {
   const pathname = usePathname();
 
   const links = [
@@ -19,14 +19,19 @@ const Sidebar = () => {
   ];
 
   return (
-    <nav className="w-64 bg-black text-white p-4">
-      <div className="mb-8">
-        <img src="https://www.premierleague.com/resources/rebrand/v7.152.3/i/elements/pl-main-logo.png" alt="Premier League Logo" className="mx-auto" />
-      </div>
-      <ul>
+    <nav className={`bg-black text-white w-64 min-h-screen fixed left-0 top-16 z-10 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-200 ease-in-out`}>
+      <ul className="p-4">
         {links.map(({ icon: Icon, text, href }, index) => (
           <li key={index} className="mb-4">
-            <Link href={href} className={`flex items-center text-gray-300 hover:text-white ${pathname === href ? 'text-white font-bold' : ''}`}>
+            <Link 
+              href={href} 
+              className={`flex items-center text-gray-300 hover:text-white ${pathname === href ? 'text-white font-bold' : ''}`}
+              onClick={() => {
+                if (window.innerWidth < 768) {
+                  closeSidebar();
+                }
+              }}
+            >
               <Icon className="mr-2" size={18} />
               {text}
             </Link>

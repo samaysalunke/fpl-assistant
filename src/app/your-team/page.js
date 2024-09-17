@@ -1,41 +1,55 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import Header from '../../components/Header';
-import TeamDisplay from '../../components/TeamDisplay';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { fetchTeamDetails } from '../../utils/api';
+import TeamDisplay from '../../components/TeamDisplay';
+import TeamIdInput from '../../components/TeamIdInput';
 
-export default async function YourTeam() {
-  const cookieStore = cookies();
-  const teamIdCookie = cookieStore.get('fplTeamId');
+export default function YourTeamPage() {
+  const [teamData, setTeamData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!teamIdCookie) {
-    redirect('/');
-  }
+  useEffect(() => {
+    const storedTeamId = localStorage.getItem('fplTeamId');
+    if (storedTeamId) {
+      fetchTeam(storedTeamId);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
-  const teamId = teamIdCookie.value;
-  let teamData;
-  let error;
+  const fetchTeam = async (teamId) => {
+    setLoading(true);
+    try {
+      const data = await fetchTeamDetails(teamId);
+      setTeamData(data);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch team data. Please try again.');
+      setLoading(false);
+    }
+  };
 
-  try {
-    teamData = await fetchTeamDetails(teamId);
-  } catch (err) {
-    console.error('Error fetching team details:', err);
-    error = err.message;
-  }
+  const handleTeamIdSubmit = (teamId) => {
+    localStorage.setItem('fplTeamId', teamId);
+    fetchTeam(teamId);
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 overflow-y-auto p-4">
-        <h1 className="text-3xl font-bold mb-4">Your Team</h1>
-        {error ? (
-          <p className="text-red-500">Error: {error}</p>
-        ) : teamData ? (
-          <TeamDisplay teamData={teamData} />
-        ) : (
-          <p>Loading team data...</p>
-        )}
-      </main>
-    </>
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Your Team</h1>
+      {teamData ? (
+        <TeamDisplay teamData={teamData} />
+      ) : (
+        <div>
+          <p>Please enter your FPL Team ID to view your team:</p>
+          <TeamIdInput onSubmit={handleTeamIdSubmit} />
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import Header from '../../components/Header';
 import H2HLeague from '../../components/H2HLeague';
 import { fetchH2HLeague } from '../../utils/api';
 
@@ -28,7 +27,6 @@ export default async function H2HLeaguePage() {
 
   return (
     <>
-      <Header />
       <main className="flex-1 overflow-y-auto p-4">
         <h1 className="text-3xl font-bold mb-4">H2H League</h1>
         {error ? (

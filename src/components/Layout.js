@@ -1,21 +1,27 @@
-import Head from 'next/head';
+'use client';
 
-export default function Layout({ children }) {
+import React, { useState } from 'react';
+import Header from './Header';
+import Sidebar from './Sidebar';
+
+const Layout = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(prevState => !prevState);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <Head>
-        <title>FPL Assistant</title>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans&display=swap" rel="stylesheet" />
-      </Head>
-      <header className="bg-primary text-white p-4">
-        <h1 className="text-2xl font-heading">FPL Assistant</h1>
-      </header>
-      <main className="container mx-auto p-4">
-        {children}
-      </main>
-      <footer className="bg-primary text-white p-4 mt-8">
-        <p className="text-center">&copy; 2023 FPL Assistant</p>
-      </footer>
+    <div className="flex flex-col min-h-screen">
+      <Header toggleSidebar={toggleSidebar} />
+      <div className="flex flex-grow pt-16">
+        <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
+        <main className="flex-grow p-4 md:p-8 overflow-y-auto ml-0 md:ml-64">
+          {children}
+        </main>
+      </div>
     </div>
   );
-}
+};
+
+export default Layout;

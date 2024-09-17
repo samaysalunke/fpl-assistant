@@ -1,7 +1,6 @@
 import React from 'react';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import Header from '../../components/Header';
 import TransferSuggestions from '../../components/TransferSuggestions';
 import { fetchTeamDetails, fetchGeneralInfo } from '../../utils/api';
 
@@ -30,7 +29,6 @@ export default async function TransferSuggestionsPage() {
 
   return (
     <>
-      <Header />
       <main className="flex-1 overflow-y-auto p-4">
         <h1 className="text-3xl font-bold mb-4">Transfer Suggestions</h1>
         {error ? (

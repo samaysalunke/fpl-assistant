@@ -15,6 +15,7 @@ export async function GET(request) {
   }
 
   if (requestCount >= RATE_LIMIT) {
+    console.log('Rate limit exceeded');
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
   }
 
@@ -24,7 +25,6 @@ export async function GET(request) {
   const url = searchParams.get('url');
   console.log(`Proxying request to: ${url}`);
 
-  
   if (!url) {
     console.log('URL parameter is missing');
     return NextResponse.json({ error: 'URL parameter is required' }, { status: 400 });
@@ -41,7 +41,9 @@ export async function GET(request) {
     console.log(`FPL API response status: ${response.status}`);
     
     if (!response.ok) {
-      throw new Error(`FPL API responded with status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Error response from FPL API:', errorText);
+      throw new Error(`FPL API responded with status: ${response.status}, message: ${errorText}`);
     }
 
     const data = await response.json();

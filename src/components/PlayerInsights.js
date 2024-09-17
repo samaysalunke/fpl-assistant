@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { fetchPlayerData, fetchFixtures } from '../utils/api';
 import { calculateForm, calculateFixtureDifficulty, predictPoints } from '../utils/fplStats';

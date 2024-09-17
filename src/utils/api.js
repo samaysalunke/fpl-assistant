@@ -45,23 +45,18 @@ export const fetchFixtures = async () => {
 };
 export const fetchH2HLeague = async (leagueId) => {
   console.log(`Attempting to fetch H2H league data for league ID: ${leagueId}`);
-  const now = Date.now();
-  if (h2hLeagueCache && (now - lastFetchTime < CACHE_DURATION)) {
-    console.log('Returning cached H2H league data');
-    return h2hLeagueCache;
-  }
-
   try {
-    console.log(`Fetching fresh H2H league data from API`);
-    const response = await fetch(`/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
+    const response = await fetch(`${API_BASE_URL}/api/fpl-proxy?url=leagues-h2h/${leagueId}/standings/`);
     console.log(`Received response with status: ${response.status}`);
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
     }
+    
     const data = await response.json();
     console.log('Successfully parsed H2H league data');
-    h2hLeagueCache = data;
-    lastFetchTime = now;
     return data;
   } catch (error) {
     console.error("Failed to fetch H2H league data:", error);
@@ -80,6 +75,19 @@ export const fetchTeamData = async () => {
   } catch (error) {
     console.error("Failed to fetch team data:", error);
     throw new Error(`Failed to fetch team data: ${error.message}`);
+  }
+};
+export const fetchUserStats = async (teamId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/fpl-proxy?url=entry/${teamId}/history/`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch user stats:", error);
+    throw new Error(`Failed to fetch user stats: ${error.message}`);
   }
 };
   

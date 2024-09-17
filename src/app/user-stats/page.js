@@ -1,24 +1,28 @@
 import React from 'react';
-import Header from '../../components/Header';
-import UserStats from '../../components/UserStats';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import Header from '../../components/Header';
+import UserStats from '../../components/UserStats';
 import { fetchUserStats } from '../../utils/api';
 
-
- export default async function UserStatsPage() {
+export default async function UserStatsPage() {
   const cookieStore = cookies();
   const teamIdCookie = cookieStore.get('fplTeamId');
 
   if (!teamIdCookie) {
     redirect('/');
   }
+
   const teamId = teamIdCookie.value;
   let userStatsData;
   let error;
 
   try {
-    userStatsData = await fetchUserStats(teamId);
+    const data = await fetchUserStats(teamId);
+    userStatsData = {
+      current: data.current,
+      past: data.past
+    };
   } catch (err) {
     console.error('Error fetching user stats:', err);
     error = err.message;

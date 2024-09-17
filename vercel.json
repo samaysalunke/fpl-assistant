@@ -5,6 +5,6 @@
     "installCommand": "npm install",
     "crons": [{
       "path": "/api/send-email-reminder",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     }]
   }

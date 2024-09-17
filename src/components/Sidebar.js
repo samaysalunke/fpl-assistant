@@ -1,30 +1,39 @@
-import React from 'react';
-import { ClockIcon, UserGroupIcon, ChartBarIcon, TableCellsIcon, ArrowsRightLeftIcon, ScaleIcon } from '@heroicons/react/24/outline';
+'use client';
 
-const Sidebar = ({ setActiveComponent }) => {
-  const menuItems = [
-    { name: 'Deadline Reminder', icon: ClockIcon, key: 'deadline' },
-    { name: 'Your Team', icon: UserGroupIcon, key: 'team' },
-    { name: 'User Stats', icon: ChartBarIcon, key: 'stats' },
-    { name: 'Recommendations', icon: TableCellsIcon, key: 'recommendations' },
-    { name: 'Transfer Suggestions', icon: ArrowsRightLeftIcon, key: 'transfers' },
-    { name: 'Player Comparison', icon: ScaleIcon, key: 'comparison' },
-    { name: 'H2H League', icon: TableCellsIcon, key: 'h2h' },
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Users, BarChart2, Repeat, Scale, Grid, Lightbulb } from 'lucide-react';
+
+const Sidebar = () => {
+  const pathname = usePathname();
+
+  const links = [
+    { icon: Users, text: 'Your Team', href: '/your-team' },
+    { icon: BarChart2, text: 'User Stats', href: '/user-stats' },
+    { icon: Grid, text: 'Recommendations', href: '/recommendations' },
+    { icon: Repeat, text: 'Transfer Suggestions', href: '/transfer-suggestions' },
+    { icon: Scale, text: 'Player Comparison', href: '/player-comparison' },
+    { icon: Grid, text: 'H2H League', href: '/h2h-league' },
+    { icon: Lightbulb, text: 'Player Insights', href: '/player-insights' },
   ];
 
   return (
-    <div className="bg-purple-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
-      {menuItems.map((item) => (
-        <button
-          key={item.key}
-          onClick={() => setActiveComponent(item.key)}
-          className="flex items-center space-x-2 px-4 py-2 hover:bg-purple-700 rounded w-full"
-        >
-          <item.icon className="h-5 w-5" />
-          <span>{item.name}</span>
-        </button>
-      ))}
-    </div>
+    <nav className="w-64 bg-black text-white p-4">
+      <div className="mb-8">
+        <img src="https://www.premierleague.com/resources/rebrand/v7.152.3/i/elements/pl-main-logo.png" alt="Premier League Logo" className="mx-auto" />
+      </div>
+      <ul>
+        {links.map(({ icon: Icon, text, href }, index) => (
+          <li key={index} className="mb-4">
+            <Link href={href} className={`flex items-center text-gray-300 hover:text-white ${pathname === href ? 'text-white font-bold' : ''}`}>
+              <Icon className="mr-2" size={18} />
+              {text}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 };
 

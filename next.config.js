@@ -16,7 +16,7 @@ const nextConfig = {
   },
   serverRuntimeConfig: {
     // ... existing server runtime config ...
-    H2H_LEAGUE_ID: process.env.H2H_LEAGUE_ID,
+    NEXT_PUBLIC_H2H_LEAGUE_ID: process.env.NEXT_PUBLIC_H2H_LEAGUE_ID,
   },
   env: {
     TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
